@@ -483,24 +483,28 @@ finally {
 #Output functions
 function Write-Red($message)
 {
+    Write-DebugLog $message
     Write-Host $message -ForegroundColor Red
     $message | Out-File ($OutputFullPath) -Append
 }
 
 function Write-Yellow($message)
 {
+    Write-DebugLog $message
     Write-Host $message -ForegroundColor Yellow
     $message | Out-File ($OutputFullPath) -Append
 }
 
 function Write-Green($message)
 {
+    Write-DebugLog $message
     Write-Host $message -ForegroundColor Green
     $message | Out-File ($OutputFullPath) -Append
 }
 
 function Write-Grey($message)
 {
+    Write-DebugLog $message
     Write-Host $message
     $message | Out-File ($OutputFullPath) -Append
 }
@@ -508,6 +512,7 @@ function Write-Grey($message)
 function Write-VerboseOutput($message)
 {
     Write-Verbose $message
+    Write-DebugLog $message
     if($Script:VerboseEnabled)
     {
         $message | Out-File ($OutputFullPath) -Append
@@ -821,6 +826,13 @@ param(
 
     return $loggerObject
 }
+
+if((Test-Path -Path "$env:ProgramData\ExchangeTools\HealthChecker") -ne $true)
+{
+    New-Item -ItemType Directory -Path "$env:ProgramData\ExchangeTools\HealthChecker" | Out-Null
+}
+
+$Script:Logger = New-LoggerObject -LogName "HealthChecker-Debug" -LogDirectory "$env:ProgramData\ExchangeTools\HealthChecker" -VerboseEnabled $true -EnableDateTime $false
 
 ############################################################
 ############################################################
@@ -6157,12 +6169,14 @@ Function Get-ErrorsThatOccurred {
         if(($Error.Count - $Script:ErrorStartCount) -ne $Script:ErrorsExcludedCount)
         {
             Write-Red("There appears to have been some errors in the script. To assist with debugging of the script, please RE-RUN the script with -Verbose send the .txt and .xml file to ExToolsFeedback@microsoft.com.")
-	        Write-Errors
+	        $Script:Logger.PreventLogCleanup = $true
+            Write-Errors
         }
         elseif($Script:VerboseEnabled)
         {
             Write-VerboseOutput("All errors that occurred were in try catch blocks and was handled correctly.")
-	        Write-Errors
+	        $Script:Logger.PreventLogCleanup = $true
+            Write-Errors
         }
     }
     else 
@@ -6282,4 +6296,5 @@ finally
     {
         $Host.PrivateData.VerboseForegroundColor = $VerboseForeground
     }
+    $Script:Logger.RemoveLatestLogFile()
 }
