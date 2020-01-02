@@ -514,6 +514,14 @@ function Write-VerboseOutput($message)
     }
 }
 
+function Write-DebugLog($message)
+{
+    if(![string]::IsNullOrWhiteSpace($message))
+    {
+        $Script:Logger.WriteToFileOnly($message)
+    }
+}
+
 Function Write-Break {
     Write-Host ""
 }
