@@ -521,9 +521,16 @@ function Write-VerboseOutput($message)
 
 function Write-DebugLog($message)
 {
-    if(![string]::IsNullOrWhiteSpace($message))
+    try
     {
-        $Script:Logger.WriteToFileOnly($message)
+        if(![string]::IsNullOrWhiteSpace($message))
+        {
+            $Script:Logger.WriteToFileOnly($message)
+        }
+    }
+    catch
+    {
+        # do nothing
     }
 }
 
@@ -832,7 +839,7 @@ if((Test-Path -Path "$env:ProgramData\ExchangeTools\HealthChecker") -ne $true)
     New-Item -ItemType Directory -Path "$env:ProgramData\ExchangeTools\HealthChecker" | Out-Null
 }
 
-$Script:Logger = New-LoggerObject -LogName "HealthChecker-Debug" -LogDirectory "$env:ProgramData\ExchangeTools\HealthChecker" -VerboseEnabled $true -EnableDateTime $false
+$Script:Logger = New-LoggerObject -LogName "HealthChecker-Debug" -LogDirectory "$env:ProgramData\ExchangeTools\HealthChecker" -VerboseEnabled $true -EnableDateTime $false -ErrorAction SilentlyContinue
 
 ############################################################
 ############################################################
@@ -6169,13 +6176,13 @@ Function Get-ErrorsThatOccurred {
         if(($Error.Count - $Script:ErrorStartCount) -ne $Script:ErrorsExcludedCount)
         {
             Write-Red("There appears to have been some errors in the script. To assist with debugging of the script, please RE-RUN the script with -Verbose send the .txt and .xml file to ExToolsFeedback@microsoft.com.")
-	        $Script:Logger.PreventLogCleanup = $true
+	        try{$Script:Logger.PreventLogCleanup = $true}catch{}
             Write-Errors
         }
         elseif($Script:VerboseEnabled)
         {
             Write-VerboseOutput("All errors that occurred were in try catch blocks and was handled correctly.")
-	        $Script:Logger.PreventLogCleanup = $true
+	        try{$Script:Logger.PreventLogCleanup = $true}catch{}
             Write-Errors
         }
     }
@@ -6296,5 +6303,5 @@ finally
     {
         $Host.PrivateData.VerboseForegroundColor = $VerboseForeground
     }
-    $Script:Logger.RemoveLatestLogFile()
+    try{$Script:Logger.RemoveLatestLogFile()}catch{}
 }
