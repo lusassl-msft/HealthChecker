@@ -521,16 +521,9 @@ function Write-VerboseOutput($message)
 
 function Write-DebugLog($message)
 {
-    try
+    if(![string]::IsNullOrEmpty($message))
     {
-        if(![string]::IsNullOrWhiteSpace($message))
-        {
-            $Script:Logger.WriteToFileOnly($message)
-        }
-    }
-    catch
-    {
-        # do nothing
+        $Script:Logger.WriteToFileOnly($message)
     }
 }
 
@@ -661,7 +654,7 @@ param(
     {
         $LogDirectory = (Get-Location).Path
     }
-    if([string]::IsNullOrWhiteSpace($LogName))
+    if([string]::IsNullOrEmpty($LogName))
     {
         throw [System.Management.Automation.ParameterBindingException] "Failed to provide valid LogName" 
     }
@@ -701,7 +694,7 @@ param(
         param(
         [string]$LoggingString
         )
-        if([string]::IsNullOrWhiteSpace($LoggingString))
+        if([string]::IsNullOrEmpty($LoggingString))
         {
             throw [System.Management.Automation.ParameterBindingException] "Failed to provide valid LoggingString"
         }
@@ -720,7 +713,7 @@ param(
         param(
         [string]$LoggingString
         )
-        if([string]::IsNullOrWhiteSpace($LoggingString))
+        if([string]::IsNullOrEmpty($LoggingString))
         {
             throw [System.Management.Automation.ParameterBindingException] "Failed to provide valid LoggingString"
         }
@@ -739,7 +732,7 @@ param(
         param(
         [string]$LoggingString
         )
-        if([string]::IsNullOrWhiteSpace($LoggingString))
+        if([string]::IsNullOrEmpty($LoggingString))
         {
             throw [System.Management.Automation.ParameterBindingException] "Failed to provide valid LoggingString"
         }
@@ -824,7 +817,7 @@ param(
     $loggerObject.UpdateFileLocation()
     try 
     {
-        "[{0}] : Creating a new logger instance" -f [System.DAteTime]::Now | Out-File ($loggerObject.FullPath) -Append
+        "[{0}] : Creating a new logger instance" -f [System.DateTime]::Now | Out-File ($loggerObject.FullPath) -Append
     }
     catch 
     {
@@ -6161,6 +6154,7 @@ Function Get-ErrorsThatOccurred {
                 }
                 if(!($goodError))
                 {
+                    Write-DebugLog $Error[$index]
                     $Error[$index] | Out-File ($Script:OutputFullPath) -Append
                 }
                 $index++
@@ -6176,13 +6170,13 @@ Function Get-ErrorsThatOccurred {
         if(($Error.Count - $Script:ErrorStartCount) -ne $Script:ErrorsExcludedCount)
         {
             Write-Red("There appears to have been some errors in the script. To assist with debugging of the script, please RE-RUN the script with -Verbose send the .txt and .xml file to ExToolsFeedback@microsoft.com.")
-	        try{$Script:Logger.PreventLogCleanup = $true}catch{}
+	        $Script:Logger.PreventLogCleanup = $true
             Write-Errors
         }
         elseif($Script:VerboseEnabled)
         {
             Write-VerboseOutput("All errors that occurred were in try catch blocks and was handled correctly.")
-	        try{$Script:Logger.PreventLogCleanup = $true}catch{}
+	        $Script:Logger.PreventLogCleanup = $true
             Write-Errors
         }
     }
@@ -6303,5 +6297,5 @@ finally
     {
         $Host.PrivateData.VerboseForegroundColor = $VerboseForeground
     }
-    try{$Script:Logger.RemoveLatestLogFile()}catch{}
+    $Script:Logger.RemoveLatestLogFile()
 }
