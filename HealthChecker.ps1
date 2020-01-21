@@ -1649,10 +1649,10 @@ param(
 [parameter(Mandatory=$false)][switch]$ReturnReplacingKBNumbersOnly
 )
     $ScriptBlock1 = {
-        Invoke-WebRequest -Uri "http://www.catalog.update.microsoft.com/Search.aspx?q=$($args[0])" -UseBasicParsing
+        Invoke-WebRequest -Uri "https://www.catalog.update.microsoft.com/Search.aspx?q=$($args[0])" -UseBasicParsing
     }
     $ScriptBlock2 = {
-        Invoke-WebRequest -Uri "http://www.catalog.update.microsoft.com/ScopedViewGeneric.aspx?updateid=$($args[0])" -UseBasicParsing
+        Invoke-WebRequest -Uri "https://www.catalog.update.microsoft.com/ScopedViewGeneric.aspx?updateid=$($args[0])" -UseBasicParsing
     }
 
     $WindowsCatalogCall1 = Start-Job -ScriptBlock $ScriptBlock1 -Name "WindowsCatalogCall1" -ArgumentList $KBNumber
@@ -1661,20 +1661,22 @@ param(
         $CatalogCall1Counter++
         if((Get-Job -Id $WindowsCatalogCall1.Id).State -eq "Completed")
         {
-            Write-VerboseOutput("WindowsCatalogCall1 after {0} attempts successfully completed. Receiving results..." -f $CatalogCall1Counter)
+            Write-Host("WindowsCatalogCall1 after {0} attempts successfully completed. Receiving results..." -f $CatalogCall1Counter)
             $WindowsCatalogKBInfo = Receive-Job -Id $WindowsCatalogCall1.Id -Keep
-            $WindowsCatalogUpdateId = $WindowsCatalogKBInfo.Links | Where-Object {$_.innerText -like "*Windows Server*x64*"}
-            Write-VerboseOutput("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall1.Name,$WindowsCatalogCall1.Id)
+            $WindowsCatalogUpdateId = $WindowsCatalogKBInfo.Links | Where-Object {$_.outerHTML -like "*Windows Server*x64*"}
+            Write-Host("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall1.Name,$WindowsCatalogCall1.Id)
             Remove-Job -Id $WindowsCatalogCall1.Id
             Break
         }
         else
         {
-            Write-VerboseOutput("Attempt: {0} WebRequest not yet complete." -f $CatalogCall1Counter)
-            if($CatalogCall1Counter -eq 30)
+            Write-Host("Attempt: {0} WebRequest not yet complete." -f $CatalogCall1Counter)
+            if($CatalogCall1Counter -eq $Timeout)
             {
-                Write-VerboseOutput("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall1.Name,$WindowsCatalogCall1.Id)
-                Remove-Job -Id $WindowsCatalogCall1.Id
+	    	Write-Host("Reached {0} attempts." -f $Timeout)
+                Write-Host("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall1.Name,$WindowsCatalogCall1.Id)
+                Stop-Job -Id $WindowsCatalogCall1.Id
+		Remove-Job -Id $WindowsCatalogCall1.Id
                 return $null
                 Break
             }
@@ -1691,10 +1693,10 @@ param(
             $CatalogCall2Counter++
             if((Get-Job -Id $WindowsCatalogCall2.Id).State -eq "Completed")
             {
-                Write-VerboseOutput("WindowsCatalogCall2 after {0} attempts successfully completed. Receiving results..." -f $CatalogCall2Counter)
+                Write-Host("WindowsCatalogCall2 after {0} attempts successfully completed. Receiving results..." -f $CatalogCall2Counter)
                 $WindowsCatalogDetailsInfo = Receive-Job -Id $WindowsCatalogCall2.Id -Keep
                 $WindowsCatalogReplaceUpdates = $WindowsCatalogDetailsInfo.Links | Where-Object {$_.href -like "*updateid=*"}
-                Write-VerboseOutput("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall2.Name,$WindowsCatalogCall2.Id)
+                Write-Host("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall2.Name,$WindowsCatalogCall2.Id)
                 Remove-Job -Id $WindowsCatalogCall2.Id
 
                 if($ReturnReplacingKBNumbersOnly)
@@ -1702,7 +1704,7 @@ param(
                     $WindowsCatalogKBNumbersOnly = @()
                     ForEach($Update in $WindowsCatalogReplaceUpdates)
                     {
-                        $WindowsCatalogKBNumbersOnly += ($Update.outerText.split("(") -replace "[()]")[1]
+                        $WindowsCatalogKBNumbersOnly += (($Update.outerHTML.split("(") -replace "[()]") -replace "[</a>]")[1]
                     }
                     return $WindowsCatalogKBNumbersOnly
                     Break
@@ -1715,12 +1717,13 @@ param(
             }
             else
             {
-                Write-VerboseOutput("Attempt: {0} WebRequest not yet complete." -f $CatalogCall2Counter)
-                if($CatalogCall2Counter -eq 30)
+                Write-Host("Attempt: {0} WebRequest not yet complete." -f $CatalogCall2Counter)
+                if($CatalogCall2Counter -eq $Timeout)
                 {
-                    Write-VerboseOutput("Reached 30 attempts.")
-                    Write-VerboseOutput("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall2.Name,$WindowsCatalogCall2.Id)
-                    Remove-Job -Id $WindowsCatalogCall2.Id
+                    Write-Host("Reached {0} attempts." -f $Timeout)
+                    Write-Host("Removing background worker job: {0} with id: {1}" -f $WindowsCatalogCall2.Name,$WindowsCatalogCall2.Id)
+                    Stop-Job -Id $WindowsCatalogCall2.Id
+		    Remove-Job -Id $WindowsCatalogCall2.Id
                     return $null
                     Break
                 }
@@ -1731,7 +1734,7 @@ param(
     }
     else
     {
-        Write-VerboseOutput("We did not found any update which replaces: {0}" -f $KBNumber)
+        Write-Host("We did not found any update which replaces: {0}" -f $KBNumber)
         return $null
     }
 }
