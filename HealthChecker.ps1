@@ -3165,9 +3165,14 @@ param(
                     $NetCheckObj = Check-NetVersionToExchangeVersion -CurrentNetVersion $NetVersion -MinSupportNetVersion Net4d7d1 -RecommendedNetVersion Net4d7d2
                     $NetCheckObj.DisplayWording = $NetCheckObj.DisplayWording + " NOTE: Starting with CU13 we will require .NET 4.7.2 before you can install this version of Exchange."
                 }
-                else
+                elseif($exBuildObj.CU -le [HealthChecker.ExchangeCULevel]::CU14)
                 {
                     $NetCheckObj = Check-NetVersionToExchangeVersion -CurrentNetVersion $NetVersion -MinSupportNetVersion Net4d7d2 -RecommendedNetVersion Net4d8
+                    $NetCheckObj.DisplayWording = $NetCheckObj.DisplayWording + " NOTE: Starting with CU15 we will require .NET 4.8 before you can install this version of Exchange."
+                }
+                else
+                {
+                    $NetCheckObj = Check-NetVersionToExchangeVersion -CurrentNetVersion $NetVersion -MinSupportNetVersion Net4d8 -RecommendedNetVersion Net4d8
                 }
                 
 
@@ -3180,9 +3185,14 @@ param(
                 {
                     $NetCheckObj = Check-NetVersionToExchangeVersion -CurrentNetVersion $NetVersion -MinSupportNetVersion Net4d7d2 -RecommendedNetVersion Net4d7d2
                 }
-                else
+                elseif($exBuildObj.CU -le [HealthChecker.ExchangeCULevel]::CU3)
                 {
                     $NetCheckObj = Check-NetVersionToExchangeVersion -CurrentNetVersion $NetVersion -MinSupportNetVersion Net4d7d2 -RecommendedNetVersion Net4d8
+                    $NetCheckObj.DisplayWording = $NetCheckObj.DisplayWording + " NOTE: Starting with CU4 we will require .NET 4.8 before you can install this version of Exchange."
+                }
+                else
+                {
+                    $NetCheckObj = Check-NetVersionToExchangeVersion -CurrentNetVersion $NetVersion -MinSupportNetVersion Net4d8 -RecommendedNetVersion Net4d8
                 }
 
             }
