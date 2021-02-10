@@ -3,8 +3,10 @@ TLS Configuration Check
 
 **Description:**
 
-We check and validate Exchange servers TLS 1.0 - 1.2 configuration. We can detect mismatches in TLS versions for client and server. This is important because Exchange can be both a client and a server. 
+We check and validate Exchange servers TLS 1.0 - 1.2 configuration. We can detect mismatches in TLS versions for client and server. This is important because Exchange can be both a client and a server.
+
 We also check for the SystemDefaultTlsVersions registry value which controls if .NET Framework will inherit its defaults from the Windows Schannel DisabledByDefault registry values or not.
+
 An invalid TLS configuration can cause issues within Exchange for communication.
 
 **Included in HTML Report?**
