@@ -33,7 +33,7 @@ Table of Contents
     + [LM Compatibility Level Information](.\SecuritySettings\LMCompatibilityLevelInformationCheck.md)
     + [SMB v1](.\SecuritySettings\SMBv1Check.md)
     + [TLS Configuration](.\SecuritySettings\TLSConfigurationCheck.md)
-    + [Vulnerability](.\SecuritySettings\VulnerabilityCheck.md)
+    + [Vulnerability](SecuritySettings/VulnerabilityCheck.md)
 <!-- tocstop -->
 
 # Exchange Information
