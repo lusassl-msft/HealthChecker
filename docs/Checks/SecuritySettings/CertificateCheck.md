@@ -13,7 +13,7 @@ This check retrieves all certificates from the Exchange server by using the `Get
 - SAN Certificate
 - Namespaces
 
-We also perfom the following checks:
+We also perform the following checks:
 
 - Certificate Lifetime check:
 We display a green information, if the certificate is valid for 60 or more days.
