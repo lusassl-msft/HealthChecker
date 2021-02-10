@@ -94,7 +94,7 @@ We show some general information about the Processor/Hardware of the Exchange se
 - Manufacturer (If Hardware type is `Physical` or `AmazonEC2`)
 - Model (If Hardware type is `Physical` or `AmazonEC2`)
 - Processor Name
-- [Number of Processors](.\HardwareInformation\Processor.md#Number-Of-Processors)
+- [Number of Processors](HardwareInformation/Processor.md#Number-Of-Processors)
 - [Number of Physical Cores](.\HardwareInformation\Processor.md#Number-Of-Logical-and-Physical-Cores)
 - [Number of Logical Cores](.\HardwareInformation\Processor.md#Number-Of-Logical-and-Physical-Cores)
 - [Hyper-Threading](.\HardwareInformation\HyperThreadingCheck.md)
