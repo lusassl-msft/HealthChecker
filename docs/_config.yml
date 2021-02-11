@@ -1,9 +1,2 @@
-theme: jekyll-theme-leap-day
-encoding: UTF-8
-
-navbar-links:
-  About Me: "aboutme"
-  Resources:
-    - Beautiful Jekyll: "https://beautifuljekyll.com"
-    - Learn markdown: "https://www.markdowntutorial.com/"
-  Author's home: "https://deanattali.com"
+title: [The title of your site]
+description: [A short description of your site's purpose]
