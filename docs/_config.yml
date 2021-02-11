@@ -1,1 +1,8 @@
 theme: jekyll-theme-cayman
+
+header_pages:
+  - SecuritySettings/VulnerabilityCheck.md
+  - HowToContribute.md
+  - HowToReportAnIssue.md
+  - HowToVerifyHash.md
+  - RoadMap.md
