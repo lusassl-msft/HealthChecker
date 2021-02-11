@@ -1,4 +1,5 @@
 theme: jekyll-theme-cayman
+encoding: UTF-8
 
 header_pages:
   - SecuritySettings/VulnerabilityCheck.md
@@ -7,7 +8,7 @@ header_pages:
   - HowToVerifyHash.md
   - RoadMap.md
 
-  navbar-links:
+navbar-links:
   About Me: "aboutme"
   Resources:
     - Beautiful Jekyll: "https://beautifuljekyll.com"
